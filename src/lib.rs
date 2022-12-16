@@ -34,7 +34,7 @@ use criterion::{
 compile_error!("criterion-cycles-per-byte currently relies on x86 or x86_64.");
 
 /// `CyclesPerByte` measures clock cycles using the x86 or x86_64 `rdtsc` instruction. `cpb` is
-/// the preferrerd measurement for cryptographic algorithms.
+/// the preferred measurement for cryptographic algorithms.
 pub struct CyclesPerByte;
 
 // WARN: does not check for the cpu feature; but we'd panic anyway so...
@@ -59,7 +59,7 @@ impl Measurement for CyclesPerByte {
     }
 
     fn end(&self, i: Self::Intermediate) -> Self::Value {
-        rdtsc() - i
+        rdtsc().saturating_sub(i)
     }
 
     fn add(&self, v1: &Self::Value, v2: &Self::Value) -> Self::Value {
