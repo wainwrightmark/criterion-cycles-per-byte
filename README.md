@@ -1,7 +1,10 @@
 # criterion-cycles-per-byte
 
-`CyclesPerByte` measures clock cycles using the x86 or x86_64 `rdtsc` instruction.
-//!
+`CyclesPerByte` measures ticks using the x86 or x86_64 `rdtsc` instruction.
+
+**This crate measures clock ticks rather than cycles. It will not provide accurate results on modern machines unless you calculate the ratio of ticks to cycles and take steps to ensure that that ratio remains consistent.**
+
+
 ```rust
 # fn fibonacci_slow(_: usize) {}
 # fn fibonacci_fast(_: usize) {}
