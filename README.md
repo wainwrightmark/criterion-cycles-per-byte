@@ -1,8 +1,15 @@
 # criterion-cycles-per-byte
 
+![GITHUB](https://img.shields.io/github/last-commit/wainwrightmark/criterion-cycles-per-byte)
+![Crates.io](https://img.shields.io/crates/v/criterion-cycles-per-byte)
+![docs](https://img.shields.io/docsrs/criterion-cycles-per-byte)
+
 `CyclesPerByte` measures ticks using the x86 or x86_64 `rdtsc` instruction.
 
-**This crate measures clock ticks rather than cycles. It will not provide accurate results on modern machines unless you calculate the ratio of ticks to cycles and take steps to ensure that that ratio remains consistent.**
+> **Warning**
+This crate measures clock ticks rather than cycles. It will not provide accurate results on modern machines unless you calculate the ratio of ticks to cycles and take steps to ensure that that ratio remains consistent.
+
+<br>
 
 
 ```rust
@@ -29,3 +36,8 @@ criterion_group!(
 );
 criterion_main!(my_bench);
 ```
+
+<br>
+
+> **Note**
+I am not the original writer but am maintaining this crate because it is still being used in several places. I plan to do version updates and bug fixes as necessary but not to add features or attempt fix the (potentially intractable)  problems with this method of measurement.
