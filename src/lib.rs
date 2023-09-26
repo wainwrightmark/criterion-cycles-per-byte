@@ -1,4 +1,4 @@
-//! `CyclesPerByte` measures clock cycles using the x86 or x86_64 `rdtsc` instruction.
+//! `CyclesPerByte` measures clock cycles using the CPU read time-stamp counter instruction.
 //!
 //! ```rust
 //! # fn fibonacci_slow(_: usize) {}
@@ -30,10 +30,14 @@ use criterion::{
     Throughput,
 };
 
-#[cfg(not(any(target_arch = "x86_64", target_arch = "x86")))]
-compile_error!("criterion-cycles-per-byte currently relies on x86 or x86_64.");
+#[cfg(not(any(
+    target_arch = "x86_64",
+    target_arch = "x86",
+    target_arch = "loongarch64"
+)))]
+compile_error!("criterion-cycles-per-byte currently relies on x86 or x86_64 or loongarch64.");
 
-/// `CyclesPerByte` measures clock cycles using the x86 or x86_64 `rdtsc` instruction. `cpb` is
+/// `CyclesPerByte` measures clock cycles using the CPU read time-stamp counter instruction. `cpb` is
 /// the preferred measurement for cryptographic algorithms.
 pub struct CyclesPerByte;
 
@@ -47,6 +51,18 @@ fn rdtsc() -> u64 {
     #[cfg(target_arch = "x86")]
     unsafe {
         core::arch::x86::_rdtsc()
+    }
+
+    #[cfg(target_arch = "loongarch64")]
+    unsafe {
+        let counter: u64;
+
+        core::arch::asm!(
+            "rdtime.d {0}, $zero",
+            out(reg) counter,
+        );
+
+        counter
     }
 }
 
