@@ -4,7 +4,14 @@
 ![Crates.io](https://img.shields.io/crates/v/criterion-cycles-per-byte)
 ![docs](https://img.shields.io/docsrs/criterion-cycles-per-byte)
 
-`CyclesPerByte` measures ticks using the x86 or x86_64 `rdtsc` instruction.
+
+`CyclesPerByte` measures ticks using the CPU read time-stamp counter instruction.
+
+| Architecture | Instruction |
+| ------------ | ----------- |
+| x86          | rdtsc       |
+| x86_64       | rdtsc       |
+| loongarch64  | rdtime.d    |
 
 > **Warning**
 This crate measures clock ticks rather than cycles. It will not provide accurate results on modern machines unless you calculate the ratio of ticks to cycles and take steps to ensure that that ratio remains consistent.
