@@ -45,11 +45,13 @@ pub struct CyclesPerByte;
 fn rdtsc() -> u64 {
     #[cfg(target_arch = "x86_64")]
     unsafe {
+        core::arch::x86_64::_mm_mfence();
         core::arch::x86_64::_rdtsc()
     }
 
     #[cfg(target_arch = "x86")]
     unsafe {
+        core::arch::x86::_mm_mfence();
         core::arch::x86::_rdtsc()
     }
 
@@ -138,7 +140,7 @@ impl ValueFormatter for CyclesPerByteFormatter {
                     *val /= *n as f64;
                 }
                 "cpb (decimal)"
-            },
+            }
         }
     }
 
