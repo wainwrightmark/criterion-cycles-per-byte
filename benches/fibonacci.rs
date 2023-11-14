@@ -1,7 +1,7 @@
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
 use criterion_cycles_per_byte::CyclesPerByte;
 
-fn fibonacci_slow(n: usize)-> usize {
+fn fibonacci_slow(n: usize) -> usize {
     match n {
         0 => panic!("zero is not a good argument to fibonacci_slow()!"),
         1 | 2 => 1,
@@ -12,7 +12,7 @@ fn fibonacci_slow(n: usize)-> usize {
         _ => fibonacci_slow(n - 1) + fibonacci_slow(n - 2),
     }
 }
-fn fibonacci_fast(n: usize)-> usize {
+fn fibonacci_fast(n: usize) -> usize {
     if n == 0 {
         panic!("zero is not a right argument to fibonacci_fast()!");
     } else if n == 1 {
@@ -28,7 +28,6 @@ fn fibonacci_fast(n: usize)-> usize {
         current = sum;
     }
     sum
-
 }
 
 fn bench(c: &mut Criterion<CyclesPerByte>) {
