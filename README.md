@@ -11,10 +11,14 @@
 | ------------ | ----------- |
 | x86          | rdtsc       |
 | x86_64       | rdtsc       |
+| aarch64 (running GNU/Linux kernel)     | pmccntr     |
 | loongarch64  | rdtime.d    |
 
 > **Warning**
 This crate measures clock ticks rather than cycles. It will not provide accurate results on modern machines unless you calculate the ratio of ticks to cycles and take steps to ensure that that ratio remains consistent.
+
+> **Warning**
+In case you're planning to use this library on an `aarch64` target, running GNU/Linux kernel, I advise you to read [src/lib.rs#L61-L68](src/lib.rs#L61-L68).
 
 <br>
 
