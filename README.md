@@ -52,3 +52,11 @@ criterion_main!(my_bench);
 
 > **Note**
 I am not the original writer but am maintaining this crate because it is still being used in several places. I plan to do version updates and bug fixes as necessary but not to add features or attempt fix the (potentially intractable)  problems with this method of measurement.
+
+
+## Compatibility
+
+| Criterion version | Cycles Per Byte Version |
+|-------------------|-------------------------|
+| 0.5               | 0.6                     |
+| 0.4               | 0.4                     |

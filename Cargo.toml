@@ -1,6 +1,6 @@
 [package]
 name = "criterion-cycles-per-byte"
-version = "0.5.0"
+version = "0.6.0"
 authors = ["The SiO4 Project Developers"]
 edition = "2018"
 description = "measure time with CPU cycles for criterion"
