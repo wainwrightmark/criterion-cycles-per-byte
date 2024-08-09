@@ -9,8 +9,11 @@ repository = "https://github.com/wainwrightmark/criterion-cycles-per-byte"
 
 [dependencies]
 criterion = "0.5"
-
+cfg-if = "1"
 
 [[bench]]
 name = "fibonacci"
 harness = false
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(rdpru)'] }

@@ -30,54 +30,64 @@ use criterion::{
     Throughput,
 };
 
-#[cfg(not(any(
-    target_arch = "x86_64",
-    target_arch = "x86",
-    target_arch = "aarch64",
-    target_arch = "loongarch64"
-)))]
-compile_error!(
-    "criterion-cycles-per-byte currently works only on x86 or x86_64 or aarch64 or loongarch64."
-);
-
 /// `CyclesPerByte` measures clock cycles using the CPU read time-stamp counter instruction. `cpb` is
 /// the preferred measurement for cryptographic algorithms.
 pub struct CyclesPerByte;
 
 // WARN: does not check for the cpu feature; but we'd panic anyway so...
-fn rdtsc() -> u64 {
-    #[cfg(target_arch = "x86_64")]
-    unsafe {
-        core::arch::x86_64::_mm_mfence();
-        core::arch::x86_64::_rdtsc()
-    }
-
+#[inline(always)]
+fn cycle_counter() -> u64 {
     #[cfg(target_arch = "x86")]
-    unsafe {
-        core::arch::x86::_mm_mfence();
-        core::arch::x86::_rdtsc()
-    }
+    use core::arch::x86::*;
+    #[cfg(target_arch = "x86_64")]
+    use core::arch::x86_64::*;
 
-    #[cfg(all(target_arch = "aarch64", target_os = "linux"))]
     unsafe {
-        // If a aarch64 CPU, running GNU/Linux kernel, executes following instruction,
-        // it'll *probably* panic with message "illegal instruction executed", because userspace
-        // isn't allowed to execute that instruction without installing a Linux Kernel Module.
-        //
-        // I've tested the LKM @ https://github.com/jerinjacobk/armv8_pmu_cycle_counter_el0
-        // on a Raspberry Pi 4b ( i.e. ARM Cortex-A72, running kernel version 6.5.0-1006-raspi )
-        // and it works like charm. While extending support of this library for aarch64 targets,
-        // I found https://github.com/pornin/crrl#benchmarks pretty helpful.
-        let mut counter: u64;
-        core::arch::asm!("dsb sy", "mrs {}, pmccntr_el0", out(reg) counter);
-        counter
-    }
-
-    #[cfg(target_arch = "loongarch64")]
-    unsafe {
-        let counter: u64;
-        core::arch::asm!("rdtime.d {0}, $zero", out(reg) counter);
-        counter
+        cfg_if::cfg_if! {
+            if #[cfg(all(rdpru, any(target_arch = "x86_64", target_arch = "x86")))] {
+                // `LFENCE`s stop RDPRU speculation
+                let [hi, lo]: [u32; 2];
+                _mm_lfence();
+                core::arch::asm!(
+                    "rdpru",
+                    out("edx") hi,
+                    out("eax") lo,
+                    in("ecx") 1u32,
+                    options(nostack, nomem, preserves_flags),
+                );
+                let ret = (u64::from(hi) << 32) | u64::from(lo);
+                _mm_lfence();
+                ret
+            } else if #[cfg(any(target_arch = "x86", target_arch = "x86_64"))] {
+                // `LFENCE`s stop RDPRU speculation. Note that MFENCE is not needed here
+                // for reasons stated in this Linux commit message:
+                // https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=be261ffce6f1
+                _mm_lfence();
+                let ret = _rdtsc();
+                _mm_lfence();
+                ret
+            } else if #[cfg(all(target_arch = "aarch64", target_os = "linux"))] {
+                // If a aarch64 CPU, running GNU/Linux kernel, executes following instruction,
+                // it'll *probably* panic with message "illegal instruction executed", because userspace
+                // isn't allowed to execute that instruction without installing a Linux Kernel Module.
+                //
+                // I've tested the LKM @ https://github.com/jerinjacobk/armv8_pmu_cycle_counter_el0
+                // on a Raspberry Pi 4b ( i.e. ARM Cortex-A72, running kernel version 6.5.0-1006-raspi )
+                // and it works like charm. While extending support of this library for aarch64 targets,
+                // I found https://github.com/pornin/crrl#benchmarks pretty helpful.
+                let counter: u64;
+                core::arch::asm!("dsb sy", "mrs {}, pmccntr_el0", out(reg) counter);
+                counter
+            } else if #[cfg(target_arch = "loongarch64")] {
+                let counter: u64;
+                core::arch::asm!("rdtime.d {0}, $zero", out(reg) counter);
+                counter
+            } else {
+                compile_error!(
+                    "criterion-cycles-per-byte currently works only on x86 or x86_64 or aarch64 or loongarch64."
+                );
+            }
+        }
     }
 }
 
@@ -85,22 +95,27 @@ impl Measurement for CyclesPerByte {
     type Intermediate = u64;
     type Value = u64;
 
+    #[inline]
     fn start(&self) -> Self::Intermediate {
-        rdtsc()
+        cycle_counter()
     }
 
+    #[inline]
     fn end(&self, i: Self::Intermediate) -> Self::Value {
-        rdtsc().saturating_sub(i)
+        cycle_counter().saturating_sub(i)
     }
 
+    #[inline]
     fn add(&self, v1: &Self::Value, v2: &Self::Value) -> Self::Value {
         v1 + v2
     }
 
+    #[inline]
     fn zero(&self) -> Self::Value {
         0
     }
 
+    #[inline]
     fn to_f64(&self, value: &Self::Value) -> f64 {
         *value as f64
     }
