@@ -15,6 +15,7 @@
 | x86_64       | rdtsc / rdpru |
 | aarch64 (running GNU/Linux kernel)     | pmccntr     |
 | loongarch64  | rdtime.d      |
+| riscv64      | rdtime        |
 
 The RDPRU instruction is available only on AMD CPUs since Zen 2 and it is not used by default.
 To enable it use the `rdpru` configuration flag, e.g. by using `RUSTFLAGS="--cfg rdpru"`.
