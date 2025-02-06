@@ -82,9 +82,13 @@ fn cycle_counter() -> u64 {
                 let counter: u64;
                 core::arch::asm!("rdtime.d {0}, $zero", out(reg) counter);
                 counter
+            } else if #[cfg(target_arch = "riscv64")] {
+                let counter: u64;
+                core::arch::asm!("rdtime {0}", out(reg) counter);
+                counter
             } else {
                 compile_error!(
-                    "criterion-cycles-per-byte currently works only on x86 or x86_64 or aarch64 or loongarch64."
+                    "criterion-cycles-per-byte currently works only on x86 or x86_64 or aarch64 or loongarch64 or riscv64."
                 );
             }
         }
