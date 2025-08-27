@@ -134,6 +134,7 @@ impl ValueFormatter for CyclesPerByteFormatter {
 
     fn format_throughput(&self, throughput: &Throughput, value: f64) -> String {
         match throughput {
+            Throughput::Bits(b) => format!("{:.4} cycles per bit", value / *b as f64),
             Throughput::Bytes(b) => format!("{:.4} cpb", value / *b as f64),
             Throughput::Elements(b) => format!("{:.4} cycles/{}", value, b),
             Throughput::BytesDecimal(b) => format!("{:.4} cpb (decimal)", value / *b as f64),
@@ -151,7 +152,12 @@ impl ValueFormatter for CyclesPerByteFormatter {
         values: &mut [f64],
     ) -> &'static str {
         match throughput {
-            Throughput::Bytes(n) => {
+            Throughput::Bits(n) => {
+                for val in values {
+                    *val /= *n as f64;
+                }
+                "cycles per bit"
+            }Throughput::Bytes(n) => {
                 for val in values {
                     *val /= *n as f64;
                 }

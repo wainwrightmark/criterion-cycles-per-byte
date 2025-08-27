@@ -4,7 +4,6 @@
 ![Crates.io](https://img.shields.io/crates/v/criterion-cycles-per-byte)
 ![docs](https://img.shields.io/docsrs/criterion-cycles-per-byte)
 
-
 `CyclesPerByte` measures ticks using the CPU read time-stamp counter instruction.
 
 ## Cycle measurement instructions
@@ -23,7 +22,7 @@ which may result in the "illegal instruction" exception during benchmark executi
 
 After enabling `rdpru` it is also strongly recommended to pin benchmarks to one core, e.g. by using
 `taskset`: `RUSTFLAGS="--cfg rdpru" taskset --cpu-list 0 cargo bench`. Otherwise, the crate may
-produce wildly incorrect measurments caused by benchmark thread migration across CPU cores.
+produce wildly incorrect measurements caused by benchmark thread migration across CPU cores.
 
 ### Warnings: x86
 
@@ -61,16 +60,16 @@ criterion_group!(
 criterion_main!(my_bench);
 ```
 
-## Maintainence status
+## Maintenance status
 
 I am not the original writer but am maintaining this crate because it is still being used
 in several places. I plan to do version updates and bug fixes as necessary but not to add
 features or attempt fix the (potentially intractable) problems with this method of measurement.
 
-
 ## Compatibility
 
 | Criterion version | Cycles Per Byte Version |
 |-------------------|-------------------------|
+| 0.7               | 0.7                     |
 | 0.5               | 0.6                     |
 | 0.4               | 0.4                     |

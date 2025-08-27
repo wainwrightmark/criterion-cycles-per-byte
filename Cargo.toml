@@ -1,14 +1,14 @@
 [package]
 name = "criterion-cycles-per-byte"
-version = "0.6.1"
-authors = ["The SiO4 Project Developers"]
+version = "0.7.0"
+authors = ["The SiO4 Project Developers", "Mark Wainwright"]
 edition = "2018"
 description = "measure time with CPU cycles for criterion"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/wainwrightmark/criterion-cycles-per-byte"
 
 [dependencies]
-criterion = "0.5"
+criterion = "0.7"
 cfg-if = "1"
 
 [[bench]]
