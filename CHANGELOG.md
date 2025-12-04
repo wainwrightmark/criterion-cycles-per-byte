@@ -2,6 +2,10 @@
 
 This project follows semantic versioning.
 
+## v0.8.0 (2025-12-04)
+
+- Support `Criterion` 0.7
+
 ## v0.7.0 (2025-08-27)
 
 - Support `Criterion` 0.7

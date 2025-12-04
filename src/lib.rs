@@ -137,6 +137,9 @@ impl ValueFormatter for CyclesPerByteFormatter {
             Throughput::Bits(b) => format!("{:.4} cycles per bit", value / *b as f64),
             Throughput::Bytes(b) => format!("{:.4} cpb", value / *b as f64),
             Throughput::Elements(b) => format!("{:.4} cycles/{}", value, b),
+            Throughput::ElementsAndBytes { elements, bytes: _ } => {
+                format!("{:.4} cycles/{}", value, elements)
+            }
             Throughput::BytesDecimal(b) => format!("{:.4} cpb (decimal)", value / *b as f64),
         }
     }
@@ -157,7 +160,8 @@ impl ValueFormatter for CyclesPerByteFormatter {
                     *val /= *n as f64;
                 }
                 "cycles per bit"
-            }Throughput::Bytes(n) => {
+            }
+            Throughput::Bytes(n) => {
                 for val in values {
                     *val /= *n as f64;
                 }
@@ -169,6 +173,13 @@ impl ValueFormatter for CyclesPerByteFormatter {
                 }
                 "c/e"
             }
+            Throughput::ElementsAndBytes { elements: n, bytes: _ } => {
+                for val in values {
+                    *val /= *n as f64;
+                }
+                "c/e"
+            }
+
             Throughput::BytesDecimal(n) => {
                 for val in values {
                     *val /= *n as f64;
